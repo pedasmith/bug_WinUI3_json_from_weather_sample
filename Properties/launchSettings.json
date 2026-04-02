@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "bug_WinUI3_json_from_weather_sample (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "bug_WinUI3_json_from_weather_sample (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

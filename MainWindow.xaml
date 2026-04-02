@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window
+    x:Class="bug_WinUI3_json_from_weather_sample.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:bug_WinUI3_json_from_weather_sample"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="bug_WinUI3_json_from_weather_sample">
+
+    <Window.SystemBackdrop>
+        <MicaBackdrop />
+    </Window.SystemBackdrop>
+
+    <StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <Button Click="OnTryJsonStart">Try JSON #1</Button>
+            <Button Click="OnTryJsonFix1">Try JSON Fix</Button>
+        </StackPanel>
+        <TextBlock x:Name="uiResult" IsTextSelectionEnabled="True" TextWrapping="Wrap" />
+    </StackPanel>
+</Window>
+
