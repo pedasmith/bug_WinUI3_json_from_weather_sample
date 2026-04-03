@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace SerializeExtra_Fix1
 {
@@ -40,12 +41,18 @@ namespace SerializeExtra_Fix1
                 SummaryWords = ["Cool", "Windy", "Humid"]
             };
 
-            var options = new JsonSerializerOptions { WriteIndented = true };
-            string jsonString = JsonSerializer.Serialize(weatherForecast, options);
+            //var options = new JsonSerializerOptions { WriteIndented = true };
+            var context = new SourceGenerationContext(); // Ideally is a singleton.
+            string jsonString = JsonSerializer.Serialize(weatherForecast, typeof(WeatherForecast), context);
 
             return jsonString;
         }
     }
+
+    [JsonSourceGenerationOptions(WriteIndented = true)]
+    [JsonSerializable(typeof(WeatherForecast), TypeInfoPropertyName = "WeatherForecastWithPropertyName")]
+    internal partial class SourceGenerationContext : JsonSerializerContext { }
+
 }
 
 // Output:
