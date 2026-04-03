@@ -7,8 +7,8 @@ Parsing JSON in a .NET Core WinUI3 Net 10 application is supposed to be simple. 
 JSON parsing should be as simple as:
 
 ```csharp
-var weatherForecast = new WeatherForecast() { } ; // and actually filled in
-string jsonString = JsonSerializer.Serialize(weatherForecast);
+    var weatherForecast = new WeatherForecast() { } ; // and actually filled in
+    string jsonString = JsonSerializer.Serialize(weatherForecast);
 ```
 
 However, this doesn't work. At compile time in Release mode, there's a new "Trim" option that is enabled by default. When the above code is compiled, the build generates a remarkably scary message
@@ -59,9 +59,9 @@ The build warning message provides a hint for fixing this. It says to use the ``
 
 The docs say to do this. So I did, in the Fix1 app
 ```csharp
-[JsonSourceGenerationOptions(WriteIndented = true)]
-[JsonSerializable(typeof(WeatherForecast))]
-internal partial class SourceGenerationContext : JsonSerializerContext { }
+    [JsonSourceGenerationOptions(WriteIndented = true)]
+    [JsonSerializable(typeof(WeatherForecast))]
+    internal partial class SourceGenerationContext : JsonSerializerContext { }
 ```
 
 This instantly fails with a compile-time error:
@@ -78,9 +78,9 @@ There isn't any useful guidance at [learn.microsoft.com](https://learn.microsoft
 
 Now the code updates look like this:
 ```csharp
-[JsonSourceGenerationOptions(WriteIndented = true)]
-[JsonSerializable(typeof(WeatherForecast), TypeInfoPropertyName = "WeatherForecastWithPropertyName")]
-internal partial class SourceGenerationContext : JsonSerializerContext { }
+    [JsonSourceGenerationOptions(WriteIndented = true)]
+    [JsonSerializable(typeof(WeatherForecast), TypeInfoPropertyName = "WeatherForecastWithPropertyName")]
+    internal partial class SourceGenerationContext : JsonSerializerContext { }
 ```
 
 ### Phase 2: use the SourceGenerationContext
@@ -108,8 +108,8 @@ Next we have to actually use the SourceGenerationContext. Looking at the [JsonSe
 Now the code looks like this:
 
 ```csharp
-var context = new SourceGenerationContext(); // Ideally is a singleton.
-string jsonString = JsonSerializer.Serialize(weatherForecast, typeof(WeatherForecast), context);
+    var context = new SourceGenerationContext(); // Ideally is a singleton.
+    string jsonString = JsonSerializer.Serialize(weatherForecast, typeof(WeatherForecast), context);
 
 ```
 
@@ -118,23 +118,51 @@ string jsonString = JsonSerializer.Serialize(weatherForecast, typeof(WeatherFore
 The code in [learn.microsoft.com](https://learn.microsoft.com/en-us/dotnet/standard/serialization/system-text-json/source-generation) explicitly has an indentation option
 
 ```csharp
-[JsonSourceGenerationOptions(WriteIndented = true)]
-[JsonSerializable(typeof(WeatherForecast))]
-internal partial class SourceGenerationContext : JsonSerializerContext { }
+    [JsonSourceGenerationOptions(WriteIndented = true)]
+    [JsonSerializable(typeof(WeatherForecast))]
+    internal partial class SourceGenerationContext : JsonSerializerContext { }
 ```
 
 But take a look at the output. It's not indented at all! So we have to add some options to context object we made.
 
 ```csharp
-var options = new JsonSerializerOptions { WriteIndented = true };
-var context = new SourceGenerationContext(options); // Ideally is a singleton.
-string jsonString = JsonSerializer.Serialize(weatherForecast, typeof(WeatherForecast), context);
+    var options = new JsonSerializerOptions { WriteIndented = true };
+    var context = new SourceGenerationContext(options); // Ideally is a singleton.
+    string jsonString = JsonSerializer.Serialize(weatherForecast, typeof(WeatherForecast), context);
 ```
 
 And also update the SourceGenerationContext to remove the pointless JsonSourceGenerationOptions
 ```csharp
-[JsonSerializable(typeof(WeatherForecast), TypeInfoPropertyName = "WeatherForecastWithPropertyName")]
-internal partial class SourceGenerationContext : JsonSerializerContext { }
+    [JsonSerializable(typeof(WeatherForecast), TypeInfoPropertyName = "WeatherForecastWithPropertyName")]
+    internal partial class SourceGenerationContext : JsonSerializerContext { }
 ```
 
+*Later snarky comment:* actually, this can be made to work; see the Phase 4 section (next) to see how! This one weird undocumented trick is all it takes!
+
 And shazam, serialization works. What about deserialization? Let's add that in as well in Phase 4.
+
+### Phase 4: More about JsonSourceGeneration and add deserialization
+
+Let's make deserialization work as well. First step is to refactor the code a little. There will be a static weatherForecast object and a new Serialize() method
+
+But first, let's look again at the ```[JsonSourceGenerationOptions(WriteIndented = true)]``` line that didn't work. It turns out, in a delightfully undocumented way, that the key is how you build your Context object. 
+
+If you **new SourceGenerationContext()** then the options in the attribute are not used. But, you can instead not bother ever making the object yourself! The class includes a "Default" field of the right type and which is a singleton, and that does include the option!
+
+So the code is rewritten:
+```csharp
+    string jsonString = JsonSerializer.Serialize(weatherForecast, typeof(WeatherForecast), SourceGenerationContext.Default);
+```
+
+note that we don't have to have our own copy of the Context at all; we just use the Default one. Of course, this also means putting the JsonSourceGenerationOptions back on the class.
+
+```csharp
+    [JsonSourceGenerationOptions(WriteIndented = false)]
+    [JsonSerializable(typeof(WeatherForecast), TypeInfoPropertyName = "WeatherForecastWithPropertyName")]
+    internal partial class SourceGenerationContext : JsonSerializerContext { }
+```
+
+Deserialization will be discussed phase 5 now.
+
+### Phase 5: Deserialization
+

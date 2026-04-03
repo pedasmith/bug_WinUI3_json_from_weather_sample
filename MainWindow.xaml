@@ -18,7 +18,9 @@
             <Button Click="OnTryJsonStart">Try JSON #1</Button>
             <Button Click="OnTryJsonFix1">Try JSON Fix</Button>
         </StackPanel>
-        <TextBlock x:Name="uiResult" IsTextSelectionEnabled="True" TextWrapping="Wrap" />
+        <ScrollViewer Height="400">
+            <TextBlock x:Name="uiResult" IsTextSelectionEnabled="True" TextWrapping="Wrap" />
+        </ScrollViewer>
     </StackPanel>
 </Window>
 

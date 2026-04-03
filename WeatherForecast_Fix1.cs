@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Windows.Devices.Bluetooth.Advertisement;
 
 namespace SerializeExtra_Fix1
 {
@@ -24,32 +25,36 @@ namespace SerializeExtra_Fix1
 
     public class Demonstrate_Bug_Program
     {
+        static WeatherForecast weatherForecast = new WeatherForecast
+        {
+            Date = DateTime.Parse("2019-08-01"),
+            TemperatureCelsius = 25,
+            Summary = "Hot",
+            SummaryField = "Hot",
+            DatesAvailable = [DateTime.Parse("2019-08-01"), DateTime.Parse("2019-08-02")],
+            TemperatureRanges = new Dictionary<string, HighLowTemps>
+            {
+                ["Cold"] = new HighLowTemps { High = 20, Low = -10 },
+                ["Hot"] = new HighLowTemps { High = 60, Low = 20 }
+            },
+            SummaryWords = ["Cool", "Windy", "Humid"]
+        };
+        //static JsonSerializerOptions options = new JsonSerializerOptions { WriteIndented = true };
+        //static SourceGenerationContext context = new SourceGenerationContext(options); // Ideally is a singleton.
+
         public static string Demonstrate_Bug_Main()
         {
-            var weatherForecast = new WeatherForecast
-            {
-                Date = DateTime.Parse("2019-08-01"),
-                TemperatureCelsius = 25,
-                Summary = "Hot",
-                SummaryField = "Hot",
-                DatesAvailable = [DateTime.Parse("2019-08-01"), DateTime.Parse("2019-08-02")],
-                TemperatureRanges = new Dictionary<string, HighLowTemps>
-                {
-                    ["Cold"] = new HighLowTemps { High = 20, Low = -10 },
-                    ["Hot"] = new HighLowTemps { High = 60, Low = 20 }
-                },
-                SummaryWords = ["Cool", "Windy", "Humid"]
-            };
-
+            // Phase 4: the old weatherForecast, options, and context variables are now static fields.
             // Phase 3: use the options value. The JsonSourceGenerationOptions doesn't do anything.
-            var options = new JsonSerializerOptions { WriteIndented = true };
-            var context = new SourceGenerationContext(options); // Ideally is a singleton.
-            string jsonString = JsonSerializer.Serialize(weatherForecast, typeof(WeatherForecast), context);
+            string jsonString = JsonSerializer.Serialize(weatherForecast, typeof(WeatherForecast), SourceGenerationContext.Default);
 
-            return jsonString;
+            var deserializedWeatherForecast = JsonSerializer.Deserialize(jsonString, typeof(WeatherForecast), SourceGenerationContext.Default) as WeatherForecast;
+            var jsonString2 = JsonSerializer.Serialize(deserializedWeatherForecast, typeof(WeatherForecast), SourceGenerationContext.Default);
+            return jsonString + "\n\n\n------------\n\n\n" + jsonString2;
         }
-    }
 
+    }
+    [JsonSourceGenerationOptions(WriteIndented = false)]
     [JsonSerializable(typeof(WeatherForecast), TypeInfoPropertyName = "WeatherForecastWithPropertyName")]
     internal partial class SourceGenerationContext : JsonSerializerContext { }
 
