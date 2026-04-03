@@ -41,15 +41,15 @@ namespace SerializeExtra_Fix1
                 SummaryWords = ["Cool", "Windy", "Humid"]
             };
 
-            //var options = new JsonSerializerOptions { WriteIndented = true };
-            var context = new SourceGenerationContext(); // Ideally is a singleton.
+            // Phase 3: use the options value. The JsonSourceGenerationOptions doesn't do anything.
+            var options = new JsonSerializerOptions { WriteIndented = true };
+            var context = new SourceGenerationContext(options); // Ideally is a singleton.
             string jsonString = JsonSerializer.Serialize(weatherForecast, typeof(WeatherForecast), context);
 
             return jsonString;
         }
     }
 
-    [JsonSourceGenerationOptions(WriteIndented = true)]
     [JsonSerializable(typeof(WeatherForecast), TypeInfoPropertyName = "WeatherForecastWithPropertyName")]
     internal partial class SourceGenerationContext : JsonSerializerContext { }
 

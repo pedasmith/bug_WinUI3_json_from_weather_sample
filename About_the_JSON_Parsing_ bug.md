@@ -78,9 +78,9 @@ There isn't any useful guidance at [learn.microsoft.com](https://learn.microsoft
 
 Now the code updates look like this:
 ```csharp
-    [JsonSourceGenerationOptions(WriteIndented = true)]
-    [JsonSerializable(typeof(WeatherForecast), TypeInfoPropertyName = "WeatherForecastWithPropertyName")]
-    internal partial class SourceGenerationContext : JsonSerializerContext { }
+[JsonSourceGenerationOptions(WriteIndented = true)]
+[JsonSerializable(typeof(WeatherForecast), TypeInfoPropertyName = "WeatherForecastWithPropertyName")]
+internal partial class SourceGenerationContext : JsonSerializerContext { }
 ```
 
 ### Phase 2: use the SourceGenerationContext
@@ -108,8 +108,8 @@ Next we have to actually use the SourceGenerationContext. Looking at the [JsonSe
 Now the code looks like this:
 
 ```csharp
-            var context = new SourceGenerationContext(); // Ideally is a singleton.
-            string jsonString = JsonSerializer.Serialize(weatherForecast, typeof(WeatherForecast), context);
+var context = new SourceGenerationContext(); // Ideally is a singleton.
+string jsonString = JsonSerializer.Serialize(weatherForecast, typeof(WeatherForecast), context);
 
 ```
 
@@ -126,6 +126,15 @@ internal partial class SourceGenerationContext : JsonSerializerContext { }
 But take a look at the output. It's not indented at all! So we have to add some options to context object we made.
 
 ```csharp
-            var context = new SourceGenerationContext(); // Ideally is a singleton.
-            string jsonString = JsonSerializer.Serialize(weatherForecast, typeof(WeatherForecast), context);
+var options = new JsonSerializerOptions { WriteIndented = true };
+var context = new SourceGenerationContext(options); // Ideally is a singleton.
+string jsonString = JsonSerializer.Serialize(weatherForecast, typeof(WeatherForecast), context);
 ```
+
+And also update the SourceGenerationContext to remove the pointless JsonSourceGenerationOptions
+```csharp
+[JsonSerializable(typeof(WeatherForecast), TypeInfoPropertyName = "WeatherForecastWithPropertyName")]
+internal partial class SourceGenerationContext : JsonSerializerContext { }
+```
+
+And shazam, serialization works. What about deserialization? Let's add that in as well in Phase 4.
