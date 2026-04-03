@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.Json;
+// Phase 5: using System.Text.Json;
 
 namespace SerializeExtra
 {
@@ -40,8 +40,9 @@ namespace SerializeExtra
                 SummaryWords = ["Cool", "Windy", "Humid"]
             };
 
-            var options = new JsonSerializerOptions { WriteIndented = true };
-            string jsonString = JsonSerializer.Serialize(weatherForecast, options);
+            // Phase 5: var options = new JsonSerializerOptions { WriteIndented = true };
+            string jsonString = "Phase 5: removed old code to prove it compiles with no trim errors";
+            // Phase 5: string jsonString = JsonSerializer.Serialize(weatherForecast, options);
 
             return jsonString;
         }

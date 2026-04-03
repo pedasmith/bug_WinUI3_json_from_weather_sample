@@ -166,3 +166,34 @@ Deserialization will be discussed phase 5 now.
 
 ### Phase 5: Deserialization
 
+Deserialization works similar to serialization. Once again you can't use the templated Deserialize(), and of course you have to do a little cast (I like the ```as WeatherForecast``` better than the ```(WeatherForecast)``` cast, but that's just me). 
+```csharp
+    var deserializedWeatherForecast = JsonSerializer.Deserialize(jsonString, typeof(WeatherForecast), SourceGenerationContext.Default) as WeatherForecast;
+```
+
+I also updated the method to do a second serialize, glue together both of the generated JSON strings, and update the XAML to make the TextBlock output be scrollable (I put it into a ScrollViewer) so that we can see the full output. I also undid the earlier refactoring; I thought I was going nto to need it, but I don't.
+
+Nothing snarky here except that it's silly that I can't use the templated versions of Serialize and Deserialize. The point of templated stuff is to make life easier, not harder; it's the code that we instantly jump to in the documentation because it's the code that's newer and more modern.
+
+
+## Wrap-up
+
+Final action items for developers:
+
+- The JSON parsing in .NET Core WinUI3 Net 10 is super painful and requires hours of research.
+- When you make your custom JsonSerializerContext class, include the TypeInfoPropertyName in the JsonSerializable attribute.
+- Always use the Default instance of the context instead of making your own instance. This is the one weird trick that makes the indentation options work.
+- Never use the templated Serialize() and Deserialize() methods.
+
+No matter what, I do end up with Trim warnings for just dring to use WinUI3 at all.
+
+As a (former) PM an (current) developer: whoever decided that the TRIM facility should be used is a complete fucking idiot. This was hours of work and research just to make simple, obvious code work. The fact that default settings product broken code, but only in Release mode and where the warnings can't actually be cleared up because Microsoft's own code products warnings, is just bogus.
+
+Worse, the documentation for "Json" is just plain wrong now.
+
+
+
+```
+1>C:\Users\USER\.nuget\packages\microsoft.windows.sdk.net.ref\10.0.19041.57\lib\net8.0\Microsoft.Windows.SDK.NET.dll : warning IL2104: Assembly 'Microsoft.Windows.SDK.NET' produced trim warnings. For more information see https://aka.ms/il2104
+1>C:\Users\USER\.nuget\packages\microsoft.windows.sdk.net.ref\10.0.19041.57\lib\net8.0\WinRT.Runtime.dll : warning IL2104: Assembly 'WinRT.Runtime' produced trim warnings. For more information see https://aka.ms/il2104
+```
