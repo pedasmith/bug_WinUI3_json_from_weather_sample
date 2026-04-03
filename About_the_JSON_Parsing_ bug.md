@@ -2,7 +2,7 @@
 
 ## Background
 
-Parsing JSON in a .NET Core WinUI3 Net 10 application is supposed to be simple. But it's actually super duper painful and requires hours of research.
+Parsing JSON in a .NET Core WinUI3 Net 10 application is supposed to be simple. But it's actually super duper painful and requires hours of research. Along the way, you'll see the IL2026: member 'System.Text.Json.JsonSerializer.Serialize ... which isn't obvious at all.
 
 JSON parsing should be as simple as:
 
@@ -197,3 +197,24 @@ Worse, the documentation for "Json" is just plain wrong now.
 1>C:\Users\USER\.nuget\packages\microsoft.windows.sdk.net.ref\10.0.19041.57\lib\net8.0\Microsoft.Windows.SDK.NET.dll : warning IL2104: Assembly 'Microsoft.Windows.SDK.NET' produced trim warnings. For more information see https://aka.ms/il2104
 1>C:\Users\USER\.nuget\packages\microsoft.windows.sdk.net.ref\10.0.19041.57\lib\net8.0\WinRT.Runtime.dll : warning IL2104: Assembly 'WinRT.Runtime' produced trim warnings. For more information see https://aka.ms/il2104
 ```
+
+Github main links:
+
+* [**Main bug project link**](https://github.com/pedasmith/bug_WinUI3_json_from_weather_sample)
+* [List of commits](https://github.com/pedasmith/bug_WinUI3_json_from_weather_sample/commits/main/)
+* [Phase 1 code doesn't work](https://github.com/pedasmith/bug_WinUI3_json_from_weather_sample/commit/da4b9c56c7d85d7a15dad6ff69b0896cfbe4a487#diff-506f7aff729346cc02ff19405b908909244603ef6157307bdbf1f236f64ff828)
+* [Phase 2 Fixed](https://github.com/pedasmith/bug_WinUI3_json_from_weather_sample/commit/c7184c05b33f85de6c6e13b25f2be7d177d43f82)
+* [Phase 3 Options work](https://github.com/pedasmith/bug_WinUI3_json_from_weather_sample/commit/ca9eef0add7fbe70e0765fdc4800b3c9738062d1)
+* [Phase 4 Options work better](https://github.com/pedasmith/bug_WinUI3_json_from_weather_sample/commit/bb4ebb0f92a4619182457352445e358282d670a3)
+* [Phase 5: Wrap up](https://github.com/pedasmith/bug_WinUI3_json_from_weather_sample/commit/4075649702796fdd982116bbc7b8985f353b1e0d)
+
+
+
+## Handy links
+[Incorrect C# sample](https://learn.microsoft.com/en-us/dotnet/standard/serialization/system-text-json/how-to#serialize-to-formatted-json)
+
+[Sunrise Programmer blogpost](https://sunriseprogrammer.blogspot.com/2026/04/il2104-il2026-trim-and-json-with-winui3.html)
+
+[C# Feedback for Microsoft](https://developercommunity.visualstudio.com/t/IL2026:-Json-Serialize-and-Deserialize-r/11070060?port=1025&fsid=af36d7c1-2c3a-485c-8271-2d3a78fbba85)
+
+

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Windows.Devices.Bluetooth.Advertisement;
 
 namespace SerializeExtra_Fix1
 {
